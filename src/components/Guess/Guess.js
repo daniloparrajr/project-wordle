@@ -1,17 +1,15 @@
 import React from 'react';
 import {range} from "../../utils";
-import {checkGuess} from "../../game-helpers";
 
-function Guess({word = '', answer}) {
-  let guess = word ? checkGuess(word, answer) : [];
 
+function Guess({guess}) {
   return (
     <p className="guess">
       {range(0, 5, 1).map((index) => {
         let cellClasses = 'cell';
 
         if (guess[index]) {
-          cellClasses += ` ${guess[index]?.status}`;
+          cellClasses += ` ${guess[index].status}`;
         }
 
         return (
