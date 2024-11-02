@@ -2,7 +2,6 @@ import React, {useState} from 'react';
 
 import { sample } from '../../utils';
 import { WORDS } from '../../data';
-import {checkGuess} from "../../game-helpers";
 
 import EnterGuessForm from "../EnterGuessForm";
 import GuessResults from "../GuessResults";
@@ -17,41 +16,34 @@ console.info({ answer });
 
 function Game() {
   const [guesses, setGuesses] = useState([]);
-  const [isGameOver, setIsGameOver] = useState(false);
-  const [isWinner, setIsWinner] = useState(false);
+  const [status, setStatus] = useState('running'); // running | lost | won
 
   function handleEnterGuess(guess) {
-    const newGuesses = [...guesses];
-    const newGuess = checkGuess(guess, answer);
-    newGuesses.push(newGuess);
+    const newGuesses = [...guesses, guess];
     setGuesses(newGuesses);
 
-    const isGuessCorrect = newGuess.every((letter) => letter.status === 'correct');
-
-    if (isGuessCorrect) {
-      setIsGameOver(true);
-      setIsWinner(true);
+    if (guess === answer) {
+      setStatus('won');
     } else if (newGuesses.length === NUM_OF_GUESSES_ALLOWED ) {
-      setIsGameOver(true);
-      setIsWinner(false);
+      setStatus('lost');
     }
   }
 
   return (
     <>
-      <GuessResults guesses={guesses}/>
-      <EnterGuessForm isGameOver={isGameOver} handleEnterGuess={handleEnterGuess} />
+      <GuessResults guesses={guesses} answer={answer} />
+      <EnterGuessForm status={status} handleEnterGuess={handleEnterGuess} />
 
-      {isGameOver && isWinner && (
+      {status === 'won' && (
         <Banner type="happy">
           <p>
             <strong>Congratulations!</strong> Got it in {" "}
-            <strong>{guesses.length} guesses</strong>.
+            <strong>{guesses.length === 1 ? '1 guess' : `${guesses.length} guesses`} </strong>.
           </p>
         </Banner>
       )}
 
-      {isGameOver && !isWinner && (
+      {status === 'lost' && (
         <Banner type="sad">
           <p>Sorry, the correct answer is <strong>{answer}</strong>.</p>
         </Banner>
